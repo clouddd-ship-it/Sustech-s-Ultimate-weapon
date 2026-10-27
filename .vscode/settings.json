@@ -1,0 +1,25 @@
+{
+  "clangd.arguments": [
+    "--background-index",
+    "--background-index-priority=low",
+    "--clang-tidy",
+    "--completion-style=detailed",
+    "--header-insertion=never",
+    "--all-scopes-completion",
+    "--pch-storage=memory",
+    "--log=error",
+    "--query-driver=/usr/bin/g++,/usr/bin/clang++"
+  ],
+  // compile_commands.json 还没生成时的兜底参数（放在工作区根目录即可被 clangd 自动发现）
+  "clangd.fallbackFlags": ["-std=c++17", "-I/usr/include/opencv4"],
+  "clangd.onConfigChanged": "restart",
+  "clangd.checkUpdates": false,
+
+  // 避免和 clangd 抢同一个语言服务（装了 cpptools 才需要）
+  "C_Cpp.intelliSenseEngine": "disabled",
+
+  "files.exclude": { "build": true, ".cache": true },
+  "search.exclude": { "build": true, ".cache": true },
+  "files.associations": { "*.hpp": "cpp", "opencv2": "cpp" },
+  "editor.formatOnSave": false
+}

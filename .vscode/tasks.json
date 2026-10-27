@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Ctrl+Shift+B：刷新 compile_commands.json + 编译当前打开的 .cpp
+      "label": "opencv: build active file",
+      "type": "shell",
+      "command": "mkdir -p '${workspaceFolder}/build' && python3 '${workspaceFolder}/.vscode/gen_compile_commands.py' && /usr/bin/g++ -std=c++17 -g -O0 -Wall '${file}' -o '${workspaceFolder}/build/${fileBasenameNoExtension}' $(pkg-config --cflags --libs opencv4)",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"],
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true }
+    },
+    {
+      // 每个 demo 都有 main，所以分开编译成各自的可执行文件
+      "label": "opencv: build all",
+      "type": "shell",
+      "command": "mkdir -p '${workspaceFolder}/build' && python3 '${workspaceFolder}/.vscode/gen_compile_commands.py' && for f in '${workspaceFolder}'/*.cpp; do echo \"[g++] $f\"; /usr/bin/g++ -std=c++17 -g -O0 -Wall \"$f\" -o \"${workspaceFolder}/build/$(basename \"${f%.cpp}\")\" $(pkg-config --cflags --libs opencv4) || exit 1; done; echo '=== 编译完成 ==='",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true }
+    },
+    {
+      // 只刷新 clangd 的数据库，不编译
+      "label": "opencv: gen compile_commands.json",
+      "type": "shell",
+      "command": "python3 '${workspaceFolder}/.vscode/gen_compile_commands.py'",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "opencv: run active file",
+      "type": "shell",
+      "command": "'${workspaceFolder}/build/${fileBasenameNoExtension}'",
+      "options": { "cwd": "${workspaceFolder}", "env": { "DISPLAY": ":0" } },
+      "problemMatcher": [],
+      "dependsOn": ["opencv: build active file"],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "opencv: clean",
+      "type": "shell",
+      "command": "rm -rf '${workspaceFolder}/build' '${workspaceFolder}/compile_commands.json' '${workspaceFolder}/.cache' && echo 'build/ 与 compile_commands.json 已清理'",
+      "problemMatcher": []
+    }
+  ]
+}

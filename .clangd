@@ -1,0 +1,24 @@
+# clangd 配置：compile_commands.json 缺失或某个文件不在数据库里时的兜底参数
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -I/usr/include/opencv4
+    - -Wall
+    - -Wextra
+  Remove:
+    - -W*  # 只保留上面显式加的，去掉重复/冲突的告警开关
+
+Diagnostics:
+  UnusedIncludes: None
+  Suppress:
+    - -Wunused-parameter
+  ClangTidy:
+    Remove:
+      - readability-*
+      - modernize-*
+      - performance-*
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true

@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // F5：用 CodeLLDB 编译并调试当前打开的 .cpp
+      "name": "OpenCV: Debug active file (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${fileBasenameNoExtension}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      // WSLg 的显示服务；imshow 需要它
+      "env": {
+        "DISPLAY": ":0",
+        "WAYLAND_DISPLAY": "wayland-0"
+      },
+      // 在集成终端里跑，cout/cerr 输出能直接看到
+      "terminal": "integrated",
+      "stopOnEntry": false,
+      "preLaunchTask": "opencv: build active file"
+    },
+    {
+      // 不重新编译，直接调试 build/ 里已有的 visual-example
+      "name": "OpenCV: Debug visual-example",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/visual-example",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": { "DISPLAY": ":0" },
+      "terminal": "integrated",
+      "preLaunchTask": "opencv: build all"
+    }
+  ]
+}
