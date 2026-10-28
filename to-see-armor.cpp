@@ -91,7 +91,7 @@ Mat preprocess(const Mat& frame,bool is_red )//Mat 返回类型代表了一个�
             
             Point2f pts1[4] , pts2[4];
             bar1.points(pts1);
-            bar1.points(pts2);
+            bar2.points(pts2);
             
             armor.corners.push_back(Point2f(bar1.center.x ,bar1.center.y - h1/2));
             armor.corners.push_back(Point2f(bar2.center.x ,bar2.center.y - h2/2));
