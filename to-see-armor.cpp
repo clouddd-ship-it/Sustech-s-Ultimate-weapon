@@ -42,15 +42,50 @@ Mat preprocess(const Mat& frame,bool is_red )//Mat 返回类型代表了一个�
     vector<RotatedRect> findLightBars(const Mat& binary_img)//vector<RotatedRect>是这个函数的返回值，，即这个函数结束后会返回一堆旋转矩形。
     {
         vector<vector<Point>> contours;//寻找外轮廓.vector是动态数组，point是数据类型表示存的是一个点，vector<point>表示存一系列点，就是一个轮廓。vector<vector<point>>就是一堆轮廓，可以共同构成装甲板
-        findContours(binary_img,contours,RETR_EXTERNAL,CHAIN_APPROX_SIMPLE);
-
+        findContours(binary_img,contours,RETR_EXTERNAL,CHAIN_APPROX_SIMPLE);//RETR_EXTERNAL表示只提取最外层（极端外部）的轮廓，它会把所有轮廓的层级关系（hierarchy）中的【2】
+//和【3】（代表父轮廓和子轮廓索引）都设置为-1.也就是说RETR_EXTERNAL是只关注最外层的轮廓，内部的轮廓都会被忽略，好处是可以避免把噪点看成是一个单独的物体。
         vector<RotatedRect> light_bars;
         for (size_t i = 0 ;i < contours.size();i++) 
         {
-        double area = contourArea(contours[i]);
+        double area = contourArea(contours[i]);//contourArea的返回类型是double？
         if(area < 30)continue;
+        RotatedRect rect = minAreaRect(contours[i]);//minAreaRect就是想象成一根皮筋去绑几个点，绑出来的图形面积就是这个函数的返回值。所以要小心的就是当点集很接近Mat的边缘的时候，可能会溢出即其顶点坐标可能出现负数。
+        float width = rect.size.width;
+        float height = rect.size.height;
+        if (width > height) swap(width,height);
+
+        float aspect_ratio = height /width ;//高宽比
+        float solidity = area/(height*width) ;//填充率。一个完美的矩形，当你用橡皮筋去包它的时候会完全贴合；但是如果它表面坑坑洼洼，或者有中空，area(实际面积）就会小于橡皮筋的底乘高
+        
+        if(aspect_ratio > 1.5 && aspect_ratio <10.0 && solidity >0.8 && area > 50 && area <5000){
+        
+            if(rect.size.width > rect.size.height) {
+                rect.angle += 90.0f;
+            }
+            light_bars.push_back(rect);
+        }//这里看不懂加90度的意思。。。。。
+        }
+        return light_bars;
+    }
+
+    //=========模块三：装甲板配对============
+    vector<Armor> matchArmors(const vector<RotatedRect>& light_bars){
+        vector<Armor> armors;
+        for(size_t i = 0;i < light_bars.size();i++){
+            for(size_t j = i+1;j < light_bars.size();j++){
+            RotatedRect bar1 = light_bars[i] ;
+            RotatedRect bar2 = light_bars[j] ;
+            if(bar1.center.x > bar2.center.x)swap(bar1,bar2);
+
+            float h1 =max(bar1.size.width, bar1.size.height);
+            float h2 =max(bar2.size.width , bar2.size.height);
+            if(abs(h1-h2)/max(h1,h2) > 0.2)continue;
+            if(abs(bar1.angle - bar2.angle) > 15.0)continue;
+
+            float dist = norm(bar1.center - bar2.center);
+            if(dist / max(h1,h2)<1.5||dist /max(h1,h2) > 4.0)continue;
+            }
         }
 
     }
-
 
