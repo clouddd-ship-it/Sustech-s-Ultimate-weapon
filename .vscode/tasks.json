@@ -40,6 +40,16 @@
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
+      // 接仿真相机跑装甲板检测；先在另一个终端起 ./run.sh -- --remote
+      "label": "sim: run sim-detect",
+      "type": "shell",
+      "command": "'${workspaceFolder}/build/sim-detect' --team=blue",
+      "options": { "cwd": "${workspaceFolder}", "env": { "DISPLAY": ":0" } },
+      "problemMatcher": [],
+      "dependsOn": ["opencv: build active file"],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
       "label": "opencv: clean",
       "type": "shell",
       "command": "rm -rf '${workspaceFolder}/build' '${workspaceFolder}/compile_commands.json' '${workspaceFolder}/.cache' && echo 'build/ 与 compile_commands.json 已清理'",
