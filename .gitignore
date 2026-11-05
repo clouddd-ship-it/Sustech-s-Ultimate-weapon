@@ -4,3 +4,8 @@ build/
 compile_commands.json
 .cache/
 cpkt*
+
+# Windows NTFS 备用数据流 (Mark of the Web)，拷入 WSL 后会降级成独立文件
+*:Zone.Identifier
+Desktop.ini
+Thumbs.db
